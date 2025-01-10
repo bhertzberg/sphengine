@@ -26,10 +26,15 @@
             <label for="custom_files" id="custom_files_label" style ="display:none;">Enter custom files in comma separated list</label>
             <input type="text" id = "custom_files" style ="display:none" placeholder="e.g., metadata.sql_query, metadata.database"><br>
 
+            <label for="custom_file_names" id="custom_files_names_label" style ="display:none;">Enter the names of your custom files in comma separated list</label>
+            <input type="text" id = "custom_file_names" style ="display:none" placeholder="e.g., metadata.sql_query, metadata.database"><br>
+
             <button type="button" onclick="generateJson()">Generate JSON</button>
         </form>
 
         <div id="json-output"></div>
+
+        <button id="copy-button" onclick="copyJson()">Copy JSON</button>
 
     </div>
 
@@ -74,10 +79,24 @@
             if (extract){
                 jsonData.extract_files = extractFiles.split(',').map(file =>file.trim());
             }
-            if (custom){
-                jsonData.custom_files = customFiles.split(',').map(file =>file.trim());
-            }
+            if (custom) {
+    jsonData.custom_files = customFiles.split(',').map(file => ({
+        taskDataPath: file.trim()
+    }));
+}
+
             document.getElementById("json-output").textContent = JSON.stringify(jsonData, null, 2)
+        }
+
+        function copyJson() {
+            const jsonText = document.getElementById("json-output").textContent;
+            navigator.clipboard.writeText(jsonText)
+                .then(() => {
+                    alert("JSON copied to clipboard!");
+                })
+                .catch((err) => {
+                    alert("Failed to copy JSON: " + err);
+                });
         }
     </script>
 </body>
