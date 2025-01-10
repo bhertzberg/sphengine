@@ -1,0 +1,54 @@
+body{
+    font-family: Arial, sans-serif;
+    background-color: #f4f746;
+    margin: 0;
+    padding: 20px;
+}
+
+.form-container{
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 00 10px rgba(0,0,0,0.1);
+    max-width: 500px;
+    margin: 0 auto;
+}
+h1{
+    text-align:center;
+    color: #333;
+}
+
+label{
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+button {
+    background-color: blueviolet;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#json-output {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    white-space: pre-rap;
+    word-wrap: break-word;
+    max-height: 300px;
+    overflow-y: auto;
+}
