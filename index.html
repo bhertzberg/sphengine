@@ -16,21 +16,14 @@
             <label for = "extract">Do you want to extract any files from the workspace?</label>
             <input type = "checkbox" id = "extract" onchange="toggleExtractFilesInput()"><br>
 
-            <label for="extract_files">Enter files to extract in comma separated list</label>
+            <label for="extract_files" id="extract_files_label" style="display:none;">Enter files to extract in comma separated list</label>
             <input type="text" id = "extract_files" style ="display:none" placeholder="e.g., main.py, test.py"><br>
-
-            <label for = "lang">Select Programming Language</label>
-            <select id="lang">
-                <option value="cpp">C++</option>
-                <option value="java">Java</option>
-                <option value = "python">Python</option>
-            </select><br>
 
 
             <label for = "custom">Do you need custom input files from metadata?</label>
             <input type = "checkbox" id = "custom" onchange="toggleCustomFilesInput()"><br>
 
-            <label for="custom_files">Enter custom files in comma separated list</label>
+            <label for="custom_files" id="custom_files_label" style ="display:none;">Enter custom files in comma separated list</label>
             <input type="text" id = "custom_files" style ="display:none" placeholder="e.g., metadata.sql_query, metadata.database"><br>
 
             <button type="button" onclick="generateJson()">Generate JSON</button>
@@ -44,26 +37,30 @@
         function toggleExtractFilesInput(){
             const extractCheckbox = document.getElementById("extract");
             const extractFilesInput = document.getElementById("extract_files");
-
+            const extractFilesLabel = document.getElementById("extract_files_label");
             if(extractCheckbox.checked){
                 extractFilesInput.style.display = "block"
+                extractFilesLabel.style.display = "block"
             } else {
                 extractFilesInput.style.display = "none"
+                extractFilesLabel.style.display = "none"
             }
         }
         function toggleCustomFilesInput(){
             const customCheckbox = document.getElementById("custom");
             const customFilesInput = document.getElementById("custom_files");
+            const customFilesLabel = document.getElementById("custom_files_label");
 
             if(customCheckbox.checked){
                 customFilesInput.style.display = "block"
+                customFilesLabel.style.display = "block"
             } else {
                 customFilesInput.style.display = "none"
+                customFilesLabel.style.display = "none"
             }
         }
         function generateJson() {
             const sphengId = document.getElementById("spheng_id").value;
-            const lang = document.getElementById("lang").value;
             const extract = document.getElementById("extract").checked;
             const extractFiles = document.getElementById("extract_files").value;
             const custom = document.getElementById("custom").checked;
@@ -71,9 +68,7 @@
 
             const jsonData = {
                 spheng_id: sphengId,
-                language: lang,
-                // extract_files: extractFiles,
-                // custom_files: customFiles
+                
             };
 
             if (extract){
