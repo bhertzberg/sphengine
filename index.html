@@ -1,91 +1,168 @@
 <!DOCTYPE html>
-<html lang = "en">
+<html lang="en">
 <head>
-    <meta charset = "UTF-8">
-    <meta name = "viewport" content = "width=devide-width", initial-scale = "1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sphengine JSON Generator</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class = "form-container">
-        <hi>Generate config JSON for your sphere engine project</hi>
-        <form id = "operator-inputs">
-            <label for="spheng_id">Sphere Engine Workspace Project ID</label>
-            <input type = "text" id = "spheng_id" required> <br>
+    <div class="form-container">
+        <h1>Generate config JSON for your sphere engine project</h1>
+        <form id="operator-inputs">
+            <!-- Sphere Engine Workspace Project ID -->
+            <div class="form-group">
+                <label for="spheng_id">Sphere Engine Workspace Project ID
+                    <span class="tooltip-container">
+                        <span class="tooltip-icon">?</span>
+                        <span class="tooltip-text">The ID of your Sphere Engine project can be found directly in the Sphere Engine project console by looking up the name of your project.</span>
+                    </span>
+                </label>
+                <input type="text" id="spheng_id" required>
+            </div>
 
-            <label for = "extract">Do you want to extract any files from the workspace?</label>
-            <input type = "checkbox" id = "extract" onchange="toggleExtractFilesInput()"><br>
+            <!-- Extract Files Checkbox -->
+            <div class="form-group">
+                <label for="extract">Do you want to extract any files from the workspace?
+                    <span class="tooltip-container">
+                        <span class="tooltip-icon">?</span>
+                        <span class="tooltip-text">Check this box if you need to extract specific files from your workspace. Provide file names in a comma-separated list.</span>
+                    </span>
+                </label>
+                <input type="checkbox" id="extract" onchange="toggleExtractFilesInput()">
+            </div>
 
-            <label for="extract_files" id="extract_files_label" style="display:none;">Enter files to extract in comma separated list</label>
-            <input type="text" id = "extract_files" style ="display:none" placeholder="e.g., main.py, test.py"><br>
+            <!-- Files to Extract Input (hidden by default) -->
+            <div class="form-group" id="extract_files_group" style="display:none;">
+                <label for="extract_files" id="extract_files_label">Enter files to extract in comma separated list
+                    <span class="tooltip-container">
+                        <span class="tooltip-icon">?</span>
+                        <span class="tooltip-text">A list of files (identified via relative path) that we want to extract from the workspace that taskers are working in to display to taskers/reviewers outside of the IDE and persist in the response.</span>
+                    </span>
+                </label>
+                <input type="text" id="extract_files" placeholder="e.g., main.py, test.py">
+            </div>
 
+            <!-- Custom Input Files Checkbox -->
+            <div class="form-group">
+                <label for="custom">Do you need custom input files from metadata?
+                    <span class="tooltip-container">
+                        <span class="tooltip-icon">?</span>
+                        <span class="tooltip-text">Check this box if you need to specify custom input files from metadata. Provide file names in a comma-separated list.</span>
+                    </span>
+                </label>
+                <input type="checkbox" id="custom" onchange="toggleCustomFilesInput()">
+            </div>
 
-            <label for = "custom">Do you need custom input files from metadata?</label>
-            <input type = "checkbox" id = "custom" onchange="toggleCustomFilesInput()"><br>
+            <!-- Custom Files Input (hidden by default) -->
+            <div class="form-group" id="custom_files_group" style="display:none;">
+                <label for="custom_files" id="custom_files_label">Enter custom files in comma separated list
+                    <span class="tooltip-container">
+                        <span class="tooltip-icon">?</span>
+                        <span class="tooltip-text">A list of predefined files and their contents which want to inject dynamically into new workspaces.</span>
+                    </span>
+                </label>
+                <input type="text" id="custom_files" placeholder="e.g., metadata.sql_query, metadata.database">
+            </div>
 
-            <label for="custom_files" id="custom_files_label" style ="display:none;">Enter custom files in comma separated list</label>
-            <input type="text" id = "custom_files" style ="display:none" placeholder="e.g., metadata.sql_query, metadata.database"><br>
+            <!-- Allow Downloads Checkbox -->
+            <div class="form-group">
+                <label for="allow_down">Allow CBs to download a file from the IDE to their computer?
+                    <span class="tooltip-container">
+                        <span class="tooltip-icon">?</span>
+                        <span class="tooltip-text">Check this box if you want to allow CBs to download files to their computer from the IDE.</span>
+                    </span>
+                </label>
+                <input type="checkbox" id="allow_down">
+            </div>
 
-            <label for="custom_file_names" id="custom_files_names_label" style ="display:none;">Enter the names of your custom files in comma separated list</label>
-            <input type="text" id = "custom_file_names" style ="display:none" placeholder="e.g., metadata.sql_query, metadata.database"><br>
+            <!-- Enable unique containers Checkbox -->
+            <div class="form-group">
+                <label for="unique_containers">Enable the serving of unique workspace container IDEs for every turn within the task?
+                    <span class="tooltip-container">
+                        <span class="tooltip-icon">?</span>
+                        <span class="tooltip-text">It is actually highly recommended to turn this toggle on for most use-cases if you have File Extraction enabled for the field and need to deliver Sphere Engine code or output stored in the step response for a MultiTurn task. Sharing the IDE across turns (toggled off) means that the code stored in the IDE is only up-to-date for whichever turn the CB worked on most recently.</span>
+                    </span>
+                </label>
+                <input type="checkbox" id="unique_containers">
+            </div>
 
-            <button type="button" onclick="generateJson()">Generate JSON</button>
+            <!-- Generate JSON Button -->
+            <div class="form-group">
+                <button type="button" onclick="generateJson()">Generate JSON</button>
+            </div>
         </form>
 
+        <!-- JSON Output -->
         <div id="json-output"></div>
 
-        <button id="copy-button" onclick="copyJson()">Copy JSON</button>
-
+        <!-- Copy JSON Button -->
+        <div class="form-group">
+            <button id="copy-button" onclick="copyJson()">Copy JSON</button>
+        </div>
     </div>
 
     <script>
-        function toggleExtractFilesInput(){
+        function toggleExtractFilesInput() {
             const extractCheckbox = document.getElementById("extract");
-            const extractFilesInput = document.getElementById("extract_files");
-            const extractFilesLabel = document.getElementById("extract_files_label");
-            if(extractCheckbox.checked){
-                extractFilesInput.style.display = "block"
-                extractFilesLabel.style.display = "block"
+            const extractFilesGroup = document.getElementById("extract_files_group");
+            if (extractCheckbox.checked) {
+                extractFilesGroup.style.display = "block";
             } else {
-                extractFilesInput.style.display = "none"
-                extractFilesLabel.style.display = "none"
+                extractFilesGroup.style.display = "none";
             }
         }
-        function toggleCustomFilesInput(){
-            const customCheckbox = document.getElementById("custom");
-            const customFilesInput = document.getElementById("custom_files");
-            const customFilesLabel = document.getElementById("custom_files_label");
 
-            if(customCheckbox.checked){
-                customFilesInput.style.display = "block"
-                customFilesLabel.style.display = "block"
+        function toggleCustomFilesInput() {
+            const customCheckbox = document.getElementById("custom");
+            const customFilesGroup = document.getElementById("custom_files_group");
+            if (customCheckbox.checked) {
+                customFilesGroup.style.display = "block";
             } else {
-                customFilesInput.style.display = "none"
-                customFilesLabel.style.display = "none"
+                customFilesGroup.style.display = "none";
             }
         }
+
         function generateJson() {
             const sphengId = document.getElementById("spheng_id").value;
             const extract = document.getElementById("extract").checked;
             const extractFiles = document.getElementById("extract_files").value;
             const custom = document.getElementById("custom").checked;
             const customFiles = document.getElementById("custom_files").value;
+            const allow_down = document.getElementById("allow_down").checked;
+            const unique_containers = document.getElementById("unique_containers").checked;
+
+            if (!sphengId) {
+                alert("Spheng ID is missing.");
+                return;
+            }
+
+            if (extract && !extractFiles) {
+                alert("Please provide files names to extract.");
+                return;
+            }
+
+            if (custom && !customFiles) {
+                alert("Please provide custom files.");
+                return;
+            }
 
             const jsonData = {
                 spheng_id: sphengId,
-                
+                allowDownloads: allow_down,
+                enableUniqueContainersPerTurn: unique_containers
             };
 
-            if (extract){
-                jsonData.extract_files = extractFiles.split(',').map(file =>file.trim());
+            if (extract) {
+                jsonData.extract_files = extractFiles.split(',').map(file => file.trim());
             }
             if (custom) {
-    jsonData.custom_files = customFiles.split(',').map(file => ({
-        taskDataPath: file.trim()
-    }));
-}
+                jsonData.custom_files = customFiles.split(',').map(file => ({
+                    taskDataPath: file.trim()
+                }));
+            }
 
-            document.getElementById("json-output").textContent = JSON.stringify(jsonData, null, 2)
+            document.getElementById("json-output").textContent = JSON.stringify(jsonData, null, 2);
         }
 
         function copyJson() {
