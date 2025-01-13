@@ -40,7 +40,7 @@
                         <span class="tooltip-text">A list of files (identified via relative path) that we want to extract from the workspace that taskers are working in to display to taskers/reviewers outside of the IDE and persist in the response.</span>
                     </span>
                 </label>
-                <input type="text" id="extract_files" placeholder="e.g., main.py, test.py">
+                <input type="text" id="extract_files" placeholder="e.g., src/main.py, test.py">
             </div>
 
             <!-- Custom Input Files Checkbox -->
@@ -103,6 +103,15 @@
     </div>
 
     <script>
+        function sanitize(input) {
+            const element = document.createElement('div');
+            if (input) {
+                element.textContent = input; // Automatically escapes HTML special characters
+            }
+            return element.innerHTML;
+        }
+
+
         function toggleExtractFilesInput() {
             const extractCheckbox = document.getElementById("extract");
             const extractFilesGroup = document.getElementById("extract_files_group");
@@ -132,6 +141,7 @@
             const allow_down = document.getElementById("allow_down").checked;
             const unique_containers = document.getElementById("unique_containers").checked;
 
+            // Validate inputs
             if (!sphengId) {
                 alert("Spheng ID is missing.");
                 return;
@@ -147,21 +157,27 @@
                 return;
             }
 
+            // Sanitize inputs to prevent XSS
+            const sanitizedSphengId = sanitize(sphengId);
+            const sanitizedExtractFiles = sanitize(extractFiles);
+            const sanitizedCustomFiles = sanitize(customFiles);
+
             const jsonData = {
-                spheng_id: sphengId,
+                workspaceProjectId: sanitizedSphengId,
                 allowDownloads: allow_down,
                 enableUniqueContainersPerTurn: unique_containers
             };
 
             if (extract) {
-                jsonData.extract_files = extractFiles.split(',').map(file => file.trim());
+                jsonData.filesToExtract = sanitizedExtractFiles.split(',').map(file => file.trim());
             }
             if (custom) {
-                jsonData.custom_files = customFiles.split(',').map(file => ({
+                jsonData.customFiles = sanitizedCustomFiles.split(',').map(file => ({
                     taskDataPath: file.trim()
                 }));
             }
 
+            // Safely display JSON output
             document.getElementById("json-output").textContent = JSON.stringify(jsonData, null, 2);
         }
 
